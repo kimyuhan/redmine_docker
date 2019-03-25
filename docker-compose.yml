@@ -65,4 +65,15 @@ volumes:
 #   bundle install
 #   bundle exec rake redmine:plugins:migrate RAILS_ENV=production
 #   bundle install --no-deployment
+
+#   Dockerコンテナ一括削除
+#   docker rm $(docker ps -a -q)
+#   イメージの削除
+#   docker rmi nginx
+#   Dockerイメージ一括削除
+#   docker rmi $(docker images -q)
+#   イメージの一覧表示
+#   docker images
+#   イメージの詳細確認
+#   docker inspect centos
 ## install gem install nokogiri -v '1.10.1'  ----------> error
