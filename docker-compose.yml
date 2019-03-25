@@ -1,0 +1,68 @@
+version: '3.5'
+services:
+  mysql:
+    image: 'mysql:5.7'
+    container_name: mysql
+    environment:
+      TZ: Asia/Tokyo
+      MYSQL_ROOT_PASSWORD: redmine
+      MYSQL_DATABASE: redmine
+      MYSQL_USER: redmine
+      MYSQL_PASSWORD: redmine
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
+#    volumes:
+#      - 'redmine_data:/var/lib/mysql'
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    links:
+      - mysql:db
+    depends_on: 
+      - mysql
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_USER=root
+      - PMA_PASSWORD=redmine
+    ports:
+      - "8080:80"
+  memcached: 
+    image: memcached 
+    container_name: memcached
+    restart: always 
+  redmine:
+    image: 'redmine:3.4.9-passenger'
+    container_name: redmine
+    restart: always
+    environment:
+      TZ: Asia/Tokyo
+      REDMINE_DB_MYSQL: mysql
+      REDMINE_DB_DATABASE: redmine
+      REDMINE_DB_USERNAME: redmine
+      REDMINE_DB_PASSWORD: redmine
+      REDMINE_DB_ENCODING: utf8mb4
+      SMTP_HOST : smtp.office365.com
+      SMTP_PORT : 587
+      SMTP_USER : pms@aaa.co.jp
+      SMTP_PASSWORD : Password
+      REDMINE_PLUGINS_MIGRATE : 1
+#   first time login id/pw = admin/admin      
+    ports:
+      - '80:3000'
+    volumes:
+      - 'redmine_data:/usr/src/redmine/log'
+      - 'redmine_data:/usr/src/redmine/plugins'
+      - 'redmine_data:/usr/src/redmine/public/plugin_assets'
+    depends_on:
+      - mysql
+      - memcached
+volumes:
+  redmine_data:
+    driver: local
+## plugin install
+#   docker exec -it redmine bash
+#   cd plugins
+#   git clone https://github.com/peclik/clipboard_image_paste.git clipboard_image_paste
+#   bundle install
+#   bundle exec rake redmine:plugins:migrate RAILS_ENV=production
+#   bundle install --no-deployment
+## install gem install nokogiri -v '1.10.1'  ----------> error
